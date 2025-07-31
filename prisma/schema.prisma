@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  name       String
+  role       String   // 'admin' | 'user'
+  created_at DateTime @default(now())
+
+  triggers       Trigger[]        @relation("UserCreatedTriggers")
+  triggerMap     TriggerUserMap[]
+  notifications  Notification[]
+}
+
+model Trigger {
+  id           Int      @id @default(autoincrement())
+  name         String
+  external_id  String
+  created_by   Int
+  created_at   DateTime @default(now())
+
+  creator      User     @relation("UserCreatedTriggers", fields: [created_by], references: [id])
+  userMaps     TriggerUserMap[]
+  notifications Notification[]
+}
+
+model TriggerUserMap {
+  id          Int      @id @default(autoincrement())
+  trigger_id  Int
+  user_id     Int
+  assigned_at DateTime @default(now())
+
+  trigger     Trigger  @relation(fields: [trigger_id], references: [id])
+  user        User     @relation(fields: [user_id], references: [id])
+
+  @@unique([trigger_id, user_id])
+}
+
+model Notification {
+  id         Int @id  @default(autoincrement())
+  user_id    Int
+  trigger_id Int
+  message    String
+  metadata   Json?
+  is_read    Boolean  @default(false)
+  created_at DateTime @default(now())
+
+  user       User     @relation(fields: [user_id], references: [id])
+  trigger    Trigger  @relation(fields: [trigger_id], references: [id])
+}
