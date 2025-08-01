@@ -49,6 +49,8 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  app.enableCors();
+
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {
       persistAuthorization: true,

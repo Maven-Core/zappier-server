@@ -6,6 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateNotificationDto {
   @ApiProperty({ example: 1 })
   @IsNumber()
+  @IsOptional()
   user_id: number;
 
   @ApiProperty({ example: 3 })

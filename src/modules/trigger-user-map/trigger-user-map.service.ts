@@ -12,6 +12,10 @@ export class TriggerUserMapService {
     return this.prisma.triggerUserMap.create({ data });
   }
 
+  delete(id: number) {
+    return this.prisma.triggerUserMap.delete({ where: { id } });
+  }
+
   findAll() {
     return this.prisma.triggerUserMap.findMany();
   }

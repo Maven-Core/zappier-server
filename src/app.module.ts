@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 
-import { WorkflowModule } from './modules/workflow/workflow.module';
 import { PrismaModule } from 'src/infrastructre/prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './modules/user/user.module';
@@ -23,7 +22,6 @@ import { NotificationModule } from './modules/notification/notification.module';
     TriggerModule,
     TriggerUserMapModule,
     NotificationModule,
-    WorkflowModule,
   ],
 })
 export class AppModule {}
