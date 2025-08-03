@@ -4,7 +4,7 @@
 /build
 
 # Databases
-./prisma/dev.db
+/prisma/dev.db
 
 # Logs
 logs
