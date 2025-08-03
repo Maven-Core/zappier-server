@@ -6,8 +6,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { DisplayUserDto } from '../dtos/aaa/display-user.dto';
 import { UserHandler } from '../handlers/userHandler';
 import { ApiOkResponseDto } from '../decorators/api-ok-response-dto.decorator';
-import { JwtPayloadDto } from 'src/infrastructre/auth/jwt-payload.dto';
+import type { JwtPayloadDto } from 'src/infrastructre/auth/jwt-payload.dto';
 import { plainToInstance } from 'class-transformer';
+import { User } from '../decorators/user.decorator';
 
 @ApiTags('users')
 @Controller('users')
@@ -27,9 +28,9 @@ export class UserController {
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
   @ApiOkResponseDto(DisplayUserDto)
-  getProfile(@Req() req: Request & { user: JwtPayloadDto }) {
-    const user = this.service.findByUsername(req.user.username);
-    return plainToInstance(DisplayUserDto, user);
+  getProfile(@User() user: JwtPayloadDto) {
+    const full_user = this.service.findByUsername(user.username);
+    return plainToInstance(DisplayUserDto, full_user);
   }
 
   @Get()

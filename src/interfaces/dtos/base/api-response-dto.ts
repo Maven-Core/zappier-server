@@ -11,6 +11,8 @@ export class ApiResponseDto<T = any> {
   statusCode?: number;
 }
 
+export type ARD<T = any> = ApiResponseDto<T>;
+
 export function ApiResponseDtoOf(input: any): any {
   const isArray = Array.isArray(input);
   const type = isArray ? input[0] : input;
@@ -28,12 +30,3 @@ export function ApiResponseDtoOf(input: any): any {
 
   return CustomResponseDto;
 }
-
-/* export function ApiResponseDtoOf<T>(classRef: new () => T) {
-  class ResponseDto extends ApiResponseDto<T> {
-    @ApiProperty({ type: classRef, required: false })
-    declare data?: T;
-  }
-  return ResponseDto;
-}
- */
