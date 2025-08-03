@@ -1,36 +1,52 @@
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
-import { NotificationService } from '../../modules/notification/notification.service';
-import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CreateNotificationDto } from '../dtos/notification/create-notification.dto';
 import { DisplayNotificationDto } from '../dtos/notification/display-notification.dto';
+import { NotificationHandler } from '../handlers/notificationHandler';
+import { ApiOkResponseDto } from '../decorators/api-ok-response-dto.decorator';
 
 @ApiTags('notifications')
 @Controller('notifications')
 export class NotificationController {
-  constructor(private readonly service: NotificationService) {}
+  constructor(private readonly handler: NotificationHandler) {}
 
   @Post()
   @ApiBody({ type: CreateNotificationDto })
-  @ApiOkResponse({ type: DisplayNotificationDto })
-  create(@Body() body: any) {
-    return this.service.create(body);
+  @ApiOkResponseDto(DisplayNotificationDto)
+  create(@Body() body: CreateNotificationDto) {
+    return this.handler.executeCreateCommand(body);
   }
 
   @Get()
-  @ApiOkResponse({ type: [DisplayNotificationDto] })
+  @ApiOkResponseDto([DisplayNotificationDto])
   findAll() {
-    return this.service.findAll();
+    return this.handler.executeFindAllQuery();
   }
 
   @Get('user/:userId')
-  @ApiOkResponse({ type: [DisplayNotificationDto] })
-  findByUser(@Param('userId') userId: number) {
-    return this.service.findByUser(userId);
+  @ApiOkResponseDto([DisplayNotificationDto])
+  findByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.handler.executeFindByUserQuery(userId);
+  }
+
+  @Delete('/:id')
+  @ApiOkResponseDto()
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.handler.executeDeleteCommand(id);
   }
 
   @Patch(':id/read')
-  @ApiOkResponse({ type: DisplayNotificationDto })
-  markAsRead(@Param('id') id: string) {
-    return this.service.markAsRead(Number(id));
+  @ApiOkResponseDto(DisplayNotificationDto)
+  markAsRead(@Param('id', ParseIntPipe) id: number) {
+    return this.handler.executeMarkAsReadCommand(id);
   }
 }

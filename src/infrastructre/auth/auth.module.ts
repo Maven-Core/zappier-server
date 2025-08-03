@@ -5,7 +5,7 @@ import { UserModule } from 'src/modules/user/user.module';
 import { AuthService } from './auth.service';
 import { AuthController } from 'src/interfaces/controllers/auth.controller';
 import { JwtStrategy } from './jwt.strategy';
-import { UserService } from 'src/modules/user/user.service';
+import { AuthHandler } from 'src/interfaces/handlers/authHandler';
 
 @Module({
   imports: [
@@ -13,10 +13,10 @@ import { UserService } from 'src/modules/user/user.service';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '7d' },
+      signOptions: { expiresIn: '10m' },
     }),
   ],
-  providers: [AuthService, JwtStrategy, UserService],
+  providers: [AuthService, JwtStrategy, AuthHandler],
   controllers: [AuthController],
 })
 export class AuthModule {}

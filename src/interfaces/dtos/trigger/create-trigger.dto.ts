@@ -11,12 +11,4 @@ export class CreateTriggerDto {
   @ApiProperty({ example: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms' })
   @IsString()
   external_id: string;
-
-  @ApiProperty({ example: 1 })
-  @IsNumber()
-  created_by: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  created_at?: Date;
 }

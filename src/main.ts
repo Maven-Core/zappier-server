@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,7 +39,7 @@ async function bootstrap() {
   };
 
   const document = SwaggerModule.createDocument(app, config, options);
-
+  app.use(cookieParser());
   app.use(
     session({
       secret: process.env.JWT_SECRET, // keep this safe
@@ -49,7 +50,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
-  app.enableCors();
+  app.enableCors({ origin: 'http://localhost:3010', credentials: true });
 
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: {

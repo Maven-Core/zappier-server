@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DisplayTriggerDto } from '../trigger/display-trigger.dto';
 import { DisplayNotificationDto } from '../notification/display-notification.dto';
 import { DisplayTriggerUserMapDto } from '../trigger-user-map/display-trigger-user-map.dto';
+import { IsOptional } from 'class-validator';
 
 export class DisplayUserDto {
   @ApiProperty()
@@ -21,11 +22,14 @@ export class DisplayUserDto {
   role: string;
 
   @ApiProperty({ type: () => [DisplayTriggerDto] }) // if you have a nested DTO
-  triggers: DisplayTriggerDto[]; // ideally: TriggerDto[]
+  @IsOptional()
+  triggers?: DisplayTriggerDto[]; // ideally: TriggerDto[]
 
   @ApiProperty({ type: () => [DisplayNotificationDto] })
-  notifications: DisplayNotificationDto[];
+  @IsOptional()
+  notifications?: DisplayNotificationDto[];
 
   @ApiProperty({ type: () => [DisplayTriggerUserMapDto] })
-  triggerMap: DisplayTriggerUserMapDto[];
+  @IsOptional()
+  triggerMap?: DisplayTriggerUserMapDto[];
 }

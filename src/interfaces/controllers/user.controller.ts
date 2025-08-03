@@ -1,31 +1,40 @@
 import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { CreateUserDto } from '../dtos/aaa/create-user.dto';
-import { ApiBearerAuth, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from 'src/modules/user/user.service';
 import { AuthGuard } from '@nestjs/passport';
 import { DisplayUserDto } from '../dtos/aaa/display-user.dto';
+import { UserHandler } from '../handlers/userHandler';
+import { ApiOkResponseDto } from '../decorators/api-ok-response-dto.decorator';
+import { JwtPayloadDto } from 'src/infrastructre/auth/jwt-payload.dto';
+import { plainToInstance } from 'class-transformer';
 
+@ApiTags('users')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly service: UserService,
+    private readonly userHandler: UserHandler,
+  ) {}
 
   @Post()
   @ApiBody({ type: CreateUserDto })
-  @ApiOkResponse({ type: [DisplayUserDto] })
-  create(@Body() data: any) {
-    return this.userService.create(data);
+  @ApiOkResponseDto(DisplayUserDto)
+  create(@Body() data: CreateUserDto) {
+    return this.userHandler.executeCreateUserCommand(data);
   }
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
-  @ApiOkResponse({ type: DisplayUserDto })
-  getProfile(@Req() req) {
-    return req.user;
+  @ApiOkResponseDto(DisplayUserDto)
+  getProfile(@Req() req: Request & { user: JwtPayloadDto }) {
+    const user = this.service.findByUsername(req.user.username);
+    return plainToInstance(DisplayUserDto, user);
   }
 
   @Get()
-  @ApiOkResponse({ type: [DisplayUserDto] })
-  findAll(): Promise<DisplayUserDto[]> {
-    return this.userService.findAll();
+  @ApiOkResponseDto([DisplayUserDto])
+  findAll() {
+    return this.userHandler.executeGetAllUserQuery();
   }
 }

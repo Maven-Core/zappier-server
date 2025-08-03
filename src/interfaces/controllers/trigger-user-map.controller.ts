@@ -1,37 +1,46 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
-import { ApiBody, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { TriggerUserMapService } from 'src/modules/trigger-user-map/trigger-user-map.service';
 import { CreateTriggerUserMapDto } from '../dtos/trigger-user-map/create-trigger-user-map.dto';
 import { DisplayTriggerUserMapDto } from '../dtos/trigger-user-map/display-trigger-user-map.dto';
-import { BaseDeleteDto } from '../dtos/base/base-dto';
+import { TriggerUserMapHandler } from '../handlers/triggerUserMapHandler';
+import { ApiOkResponseDto } from '../decorators/api-ok-response-dto.decorator';
 
 @ApiTags('trigger-user-map')
 @Controller('trigger-user-map')
 export class TriggerUserMapController {
-  constructor(private readonly service: TriggerUserMapService) {}
+  constructor(private readonly handler: TriggerUserMapHandler) {}
 
   @Post()
   @ApiBody({ type: CreateTriggerUserMapDto })
-  @ApiOkResponse({ type: DisplayTriggerUserMapDto })
+  @ApiOkResponseDto(DisplayTriggerUserMapDto)
   create(@Body() body: CreateTriggerUserMapDto) {
-    return this.service.create(body);
+    return this.handler.executeCreateCommand(body);
   }
 
-  @Delete()
-  @ApiOkResponse({ type: DisplayTriggerUserMapDto })
-  delete(@Body() body: BaseDeleteDto) {
-    return this.service.delete(body.id);
+  @Delete('/:id')
+  @ApiOkResponseDto()
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.handler.executeDeleteCommand(id);
   }
 
   @Get()
-  @ApiOkResponse({ type: [DisplayTriggerUserMapDto] })
+  @ApiOkResponseDto([DisplayTriggerUserMapDto])
   findAll() {
-    return this.service.findAll();
+    return this.handler.executeFindAllQuery();
   }
 
   @Get('user/:userId')
-  @ApiOkResponse({ type: [DisplayTriggerUserMapDto] })
-  findByUser(@Param('userId') userId: number) {
-    return this.service.findByUser(userId);
+  @ApiOkResponseDto([DisplayTriggerUserMapDto])
+  findByUser(@Param('userId', ParseIntPipe) userId: number) {
+    return this.handler.executeFindByUserQuery(userId);
   }
 }

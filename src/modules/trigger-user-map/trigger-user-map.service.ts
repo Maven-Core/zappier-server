@@ -1,8 +1,8 @@
 // trigger-user-map.service.ts
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/infrastructre/prisma/prisma.service';
 import { CreateTriggerUserMapDto } from 'src/interfaces/dtos/trigger-user-map/create-trigger-user-map.dto';
+import { FilterTriggerUserMapDto } from 'src/interfaces/dtos/trigger-user-map/filter-trigger-user-map.dto';
 
 @Injectable()
 export class TriggerUserMapService {
@@ -22,5 +22,14 @@ export class TriggerUserMapService {
 
   findByUser(userId: number) {
     return this.prisma.triggerUserMap.findMany({ where: { user_id: userId } });
+  }
+
+  async findByFilter(filter: FilterTriggerUserMapDto) {
+    // Remove undefined keys so Prisma doesn't filter by them
+    const where = Object.fromEntries(
+      Object.entries(filter).filter(([_, v]) => v !== undefined),
+    );
+
+    return this.prisma.triggerUserMap.findMany({ where });
   }
 }
